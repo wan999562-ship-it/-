@@ -410,6 +410,150 @@ body.ingame .wrap{padding:8px 10px 12px}
   .editor{grid-template-columns:1fr}
   .side{position:static;order:-1}
 }
+
+/* ==== ルール説明書（埋め込み） ==== */
+.rbwrap{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --bg:#e9eef1; --panel:#f7f9fa; --ink:#15232c; --muted:#54656f; --line:#c5d0d7;
+  --accent:#12787f; --p1:#1c9c94; --p2:#d4583f; --gold:#a8801f; --rg:#8d4fd6; --ok:#23a35f;
+  --c1:#dde5e9; --c2:#cfd9de; --bd:#3c4a54;
+}
+@media (prefers-color-scheme:dark){.rbwrap:not([data-theme="light"]){
+    --bg:#0e1920; --panel:#15242d; --ink:#e3ebee; --muted:#93a5af; --line:#2a3e4a;
+    --accent:#4cc9c0; --p1:#2bb8ad; --p2:#e2664c; --gold:#e2c26a; --rg:#b98af0; --ok:#3cc47f;
+    --c1:#1a2b35; --c2:#15242d; --bd:#4a6070;
+  }}
+.rbwrap[data-theme="dark"]{
+  --bg:#0e1920; --panel:#15242d; --ink:#e3ebee; --muted:#93a5af; --line:#2a3e4a;
+  --accent:#4cc9c0; --p1:#2bb8ad; --p2:#e2664c; --gold:#e2c26a; --rg:#b98af0; --ok:#3cc47f;
+  --c1:#1a2b35; --c2:#15242d; --bd:#4a6070;
+}
+.rbwrap{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 14px)}
+.rbwrap *, .rbwrap *::before, .rbwrap *::after{box-sizing:border-box}
+.rbwrap [hidden]{display:none!important}
+.rbwrap{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.9;-webkit-text-size-adjust:100%;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.rbwrap a{color:var(--accent)}
+.rbwrap :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.rbwrap .page{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;max-width:1140px;margin:0 auto;padding:24px 18px 80px}
+@media (min-width:980px){.rbwrap .page{grid-template-columns:230px minmax(0,1fr);gap:56px;padding-top:40px}}
+.rbwrap .toc{font-size:.92rem}
+.rbwrap .toc h2{font-family:var(--serif);font-size:1rem;margin:0 0 8px;letter-spacing:.08em}
+.rbwrap .toc ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 12px;counter-reset:ch}
+.rbwrap .toc li{counter-increment:ch}
+.rbwrap .toc a{display:block;padding:3px 0 3px 10px;border-left:3px solid var(--line);color:var(--muted);text-decoration:none;line-height:1.5}
+.rbwrap .toc a::before{content:counter(ch) "　";color:var(--muted);font-variant-numeric:tabular-nums}
+.rbwrap .toc a:hover{color:var(--ink)}
+.rbwrap .toc a[aria-current=true]{border-left-color:var(--accent);color:var(--ink);font-weight:700}
+@media (min-width:980px){.rbwrap .toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start}
+.rbwrap .toc ol{display:block}}
+.rbwrap .hero{display:grid;gap:28px;align-items:center;margin-bottom:48px}
+@media (min-width:760px){.rbwrap .hero{grid-template-columns:minmax(0,1fr) 300px}}
+.rbwrap h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);line-height:1.25;margin:0 0 10px;letter-spacing:.03em}
+.rbwrap .lead{color:var(--muted);margin:0 0 18px;max-width:34em}
+.rbwrap .glance{margin:0;display:grid;gap:10px;max-width:36em}
+.rbwrap .glance div{display:grid;grid-template-columns:5.2em 1fr;gap:10px;padding-top:10px;border-top:1px solid var(--line)}
+.rbwrap .glance dt{font-weight:700;color:var(--accent)}
+.rbwrap .glance dd{margin:0}
+.rbwrap main{min-width:0}
+.rbwrap section{margin:0 0 56px}
+.rbwrap h2{font-family:var(--serif);font-size:clamp(1.4rem,3vw,1.75rem);line-height:1.4;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.rbwrap h2 .n{font-size:.62em;color:var(--muted);font-weight:400;margin-right:.8em;letter-spacing:.06em}
+.rbwrap h3{font-size:1.08rem;margin:26px 0 6px}
+.rbwrap p{margin:0 0 14px;max-width:40em}
+.rbwrap ul, .rbwrap ol{margin:0 0 14px;padding-left:1.4em;max-width:40em}
+.rbwrap li{margin:3px 0}
+.rbwrap b, .rbwrap strong{font-weight:700}
+.rbwrap .rule, .rbwrap .house{margin:18px 0;padding:12px 16px;border-left:5px solid var(--accent);background:var(--panel);max-width:40em;border-radius:0 8px 8px 0}
+.rbwrap .house{border-left-color:var(--gold)}
+.rbwrap .rule>:last-child, .rbwrap .house>:last-child{margin-bottom:0}
+.rbwrap .rule .t, .rbwrap .house .t{display:block;font-weight:700;margin-bottom:2px}
+.rbwrap .rule .t{color:var(--accent)}
+.rbwrap .house .t{color:var(--gold)}
+.rbwrap table{border-collapse:collapse;width:100%;max-width:44em;margin:8px 0 16px;background:var(--panel);font-size:.95rem}
+.rbwrap th, .rbwrap td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;line-height:1.6}
+.rbwrap th{background:color-mix(in srgb,var(--panel) 80%,var(--ink) 8%);white-space:nowrap}
+.rbwrap .scroll{overflow-x:auto;max-width:100%}
+.rbwrap .figs{display:flex;flex-wrap:wrap;gap:22px;margin:16px 0 20px;align-items:flex-start}
+.rbwrap figure{margin:0}
+.rbwrap figcaption{font-size:.88rem;color:var(--muted);margin-top:6px;max-width:22em;line-height:1.6}
+.rbwrap .bd{--cell:1fr;display:grid;grid-template-columns:repeat(7,1fr);width:min(100%,300px);aspect-ratio:1;border:3px solid var(--bd);border-radius:10px;overflow:hidden;background:var(--bd)}
+.rbwrap .bd.sm{width:min(100%,240px)}
+.rbwrap .bd i, .rbwrap .mp i{display:grid;place-items:center;position:relative;background:var(--c1);border:1px solid color-mix(in srgb,var(--bd) 45%,transparent);font-style:normal;min-width:0}
+.rbwrap .bd i.alt{background:var(--c2)}
+.rbwrap .bd i b{font-size:clamp(.7rem,2.6vw,1rem);line-height:1}
+.rbwrap .bd.sm i b{font-size:clamp(.62rem,2vw,.85rem)}
+.rbwrap .bd i.z1{box-shadow:inset 0 0 0 100px color-mix(in srgb,var(--p1) 16%,transparent)}
+.rbwrap .bd i.z2{box-shadow:inset 0 0 0 100px color-mix(in srgb,var(--p2) 16%,transparent)}
+.rbwrap .bd i.p1 b, .rbwrap .bd i.p2 b{width:78%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700}
+.rbwrap .bd i.p1 b{background:var(--p1)}
+.rbwrap .bd i.p2 b{background:var(--p2)}
+.rbwrap .bd i.st b{border-radius:22%}
+.rbwrap .bd i.ld b{box-shadow:0 0 0 2px var(--gold)}
+.rbwrap .bd i.zn{background:color-mix(in srgb,var(--ok) 32%,var(--c1))}
+.rbwrap .bd i.zt{border-top:3px dashed var(--ok)}
+.rbwrap .bd i.ev{background:color-mix(in srgb,var(--gold) 34%,var(--c1))}
+.rbwrap .bd i.rg{background:color-mix(in srgb,var(--rg) 40%,var(--c1))}
+.rbwrap .sides{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:5px;width:min(100%,300px)}
+.rbwrap .sides .a{color:var(--p2);font-weight:700}
+.rbwrap .sides .b{color:var(--p1);font-weight:700}
+.rbwrap .mp{display:grid;width:118px;aspect-ratio:1;border:2px solid var(--bd);border-radius:6px;overflow:hidden;background:var(--bd)}
+.rbwrap .mp i{border:1px solid color-mix(in srgb,var(--bd) 35%,transparent)}
+.rbwrap .mp i.on{background:var(--accent)}
+.rbwrap .mp i.sl{background:color-mix(in srgb,var(--accent) 45%,var(--c1))}
+.rbwrap .mp i.ctr{background:var(--ink)}
+.rbwrap .mp i.ctr b{color:var(--bg);font-size:.7rem}
+.rbwrap .mpfigs{display:flex;flex-wrap:wrap;gap:16px 20px;margin:12px 0 18px}
+.rbwrap .mpfigs figcaption{max-width:118px;text-align:center}
+.rbwrap .strip{display:flex;gap:3px}
+.rbwrap .strip i{width:44px;height:44px;display:grid;place-items:center;background:var(--c1);border:1px solid var(--line);font-style:normal;border-radius:6px}
+.rbwrap .strip i.me{background:var(--p1);color:#fff;font-weight:700}
+.rbwrap .strip i.foe{background:var(--p2);color:#fff;font-weight:700}
+.rbwrap .strip i.tg{border-style:dashed;font-weight:700;color:var(--p2)}
+.rbwrap .strip i.tg.ok{color:var(--ok);border-color:var(--ok)}
+.rbwrap .strip i.emp{background:var(--c2)}
+.rbwrap .cardmock{width:210px;aspect-ratio:5/7;border-radius:14px;padding:8px;background:linear-gradient(155deg,#a8443c,#6e2622);color:#16212a;display:flex;flex-direction:column;gap:5px;font-size:.78rem;line-height:1.35;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.rbwrap .cm-hd{display:flex;align-items:center;gap:6px;background:#eef2f3;border-radius:7px;padding:4px 6px}
+.rbwrap .cm-cost{width:26px;height:26px;border-radius:50%;background:#101b22;color:#ffd76a;display:grid;place-items:center;font-weight:700}
+.rbwrap .cm-name{font-family:var(--serif);font-weight:700;font-size:1rem}
+.rbwrap .cm-art{flex:0 0 40%;border-radius:6px;background:linear-gradient(135deg,#5ad1ff,#7a5cff 55%,#ff5c9a);display:grid;place-items:center;color:#fff;font-weight:700}
+.rbwrap .cm-sub{color:#fff;font-weight:700;padding-left:3px}
+.rbwrap .cm-txt{flex:1;background:#eef2f3;border-radius:6px;padding:5px 7px}
+.rbwrap .cm-st{display:flex;justify-content:flex-end;gap:5px}
+.rbwrap .cm-st span{background:#101b22;color:#fff;border-radius:6px;padding:2px 8px;font-weight:700}
+.rbwrap .cardmock sup{color:var(--gold);font-weight:700;margin-left:2px;font-size:.7rem}
+.rbwrap .cm-hd sup, .rbwrap .cm-art sup, .rbwrap .cm-st sup, .rbwrap .cm-sub sup, .rbwrap .cm-txt sup{color:#c2410c}
+.rbwrap .cm-cost sup{color:#ffd76a}
+.rbwrap .cm-sub sup, .rbwrap .cm-art sup{color:#ffe08a}
+.rbwrap .legend{margin:0;padding-left:0;list-style:none;font-size:.93rem}
+.rbwrap .legend li{margin:2px 0}
+.rbwrap .cardrow{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin:12px 0 18px}
+.rbwrap .flow{list-style:none;margin:8px 0 18px;padding:0;display:grid;gap:10px;max-width:44em;counter-reset:st}
+.rbwrap .flow li{counter-increment:st;position:relative;padding:10px 14px 10px 54px;background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0}
+.rbwrap .flow li::before{content:counter(st);position:absolute;left:14px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-weight:700}
+.rbwrap .flow b{display:block}
+.rbwrap .toplink{display:inline-block;margin-top:6px;font-size:.88rem}
+.rbwrap dl.q dt{font-weight:700;margin-top:16px}
+.rbwrap dl.q dd{margin:2px 0 0;max-width:40em}
+.rbwrap .foot{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padding-top:14px;max-width:40em}
+@media print{.rbwrap body{background:#fff;color:#000}
+.rbwrap .toc{display:none}
+.rbwrap .page{display:block;padding:0}
+.rbwrap section{break-inside:avoid-page}
+.rbwrap figure, .rbwrap .figs, .rbwrap .mpfigs{break-inside:avoid}
+.rbwrap .bd, .rbwrap .mp, .rbwrap .cardmock, .rbwrap .strip i{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+/* ---- ルール説明書（ふだんは小さいボタン） ---- */
+.rbfab{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:10px;z-index:55;padding:6px 12px;border:1px solid var(--line);border-radius:20px;background:var(--panel);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer;font-size:.82rem;opacity:.82}
+.rbfab:hover,.rbfab:focus-visible{opacity:1}
+.rbmodal{position:fixed;inset:0;z-index:70;background:var(--bg);display:flex;flex-direction:column}
+.rbmodalbar{flex:none;display:flex;justify-content:flex-end;padding:8px 10px;padding-top:calc(env(safe-area-inset-top,0px) + 8px);border-bottom:1px solid var(--line);background:var(--panel)}
+.rbmodalbar button{padding:6px 14px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);cursor:pointer;font-size:.9rem;font-weight:700}
+#rbwrap{flex:1;min-height:0}
+
 </style>
 </head>
 <body>
@@ -2953,5 +3097,342 @@ $("text").addEventListener("paste", e => {
 })();
 })();
 </script>
+
+<button type="button" id="rbToggle" class="rbfab" aria-haspopup="dialog" aria-expanded="false" aria-controls="rbModal" title="ルール説明書を開く">📖 ルール</button>
+<div class="rbmodal" id="rbModal" hidden role="dialog" aria-modal="true" aria-label="デュエマⅢ　ルール説明書">
+  <div class="rbmodalbar"><button type="button" id="rbClose">✕ 閉じる</button></div>
+  <div class="rbwrap" id="rbwrap">
+<div class="page">
+<nav class="toc" aria-label="もくじ"><h2>もくじ</h2><ol><li><a href="#purpose">ゲームの目的</a></li><li><a href="#prep">用意するもの</a></li><li><a href="#cards">カードの種類と見かた</a></li><li><a href="#board">盤面と最初の配置</a></li><li><a href="#start">ゲームの始め方</a></li><li><a href="#turn">1ターンの流れ</a></li><li><a href="#summon">召喚とオフサイドライン</a></li><li><a href="#move">移動と攻撃</a></li><li><a href="#battle">戦闘</a></li><li><a href="#struct">設置カード</a></li><li><a href="#leader">リーダー</a></li><li><a href="#evolve">進化</a></li><li><a href="#win">勝敗が決まるとき</a></li><li><a href="#tools">効果の処理と便利な操作</a></li><li><a href="#app">アプリの使いかた</a></li><li><a href="#faq">よくある疑問</a></li></ol></nav>
+<main>
+
+<header class="hero">
+  <div>
+    <h1>デュエマⅢ<br>ルールブック</h1>
+    <p class="lead">7×7の盤面にコマを出し、進めて、相手のリーダーのマスをめざします。友達とボイスチャットで話しながら遊ぶ、2人用の対戦ゲームです。</p>
+    <dl class="glance">
+      <div><dt>勝ち方</dt><dd>自分のコマが相手のリーダーのマスに入れば勝ち。相手が自分のターンの最初に山札を引けなくなっても勝ちです。</dd></div>
+      <div><dt>出し方</dt><dd>毎ターン増えるマナで、クリーチャーを盤面に出します。最初は自陣の手前3列にしか出せません。</dd></div>
+      <div><dt>動き方</dt><dd>1ターンにコマを1つだけ、1回だけ動かします。相手のコマがいるマスに入ると戦闘になります。</dd></div>
+      <div><dt>戦い方</dt><dd>ATKがDEFより大きければ相手を破壊。同じなら相打ち、小さければ返り討ちです。</dd></div>
+    </dl>
+  </div>
+  <figure>
+    <div class="bd" role="img" aria-label="7×7の盤面。上の列の真ん中に相手のリーダー、下の列の真ん中に自分のリーダーがいる。"><i class="z2"></i><i class="alt z2"></i><i class="z2"></i><i class="alt z2 p2 ld"><b>王</b></i><i class="z2"></i><i class="alt z2"></i><i class="z2"></i><i class="alt z2"></i><i class="z2"></i><i class="alt z2"></i><i class="z2"></i><i class="alt z2"></i><i class="z2"></i><i class="alt z2"></i><i class="z2"></i><i class="alt z2"></i><i class="z2"></i><i class="alt z2"></i><i class="z2"></i><i class="alt z2"></i><i class="z2"></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class="z1"></i><i class="alt z1"></i><i class="z1"></i><i class="alt z1"></i><i class="z1"></i><i class="alt z1"></i><i class="z1"></i><i class="alt z1"></i><i class="z1"></i><i class="alt z1"></i><i class="z1"></i><i class="alt z1"></i><i class="z1"></i><i class="alt z1"></i><i class="z1"></i><i class="alt z1"></i><i class="z1"></i><i class="alt z1 p1 ld"><b>王</b></i><i class="z1"></i><i class="alt z1"></i><i class="z1"></i></div>
+    <div class="sides"><span class="a">▲ 相手側</span><span class="b">自分側 ▼</span></div>
+    <figcaption>ゲーム開始時の盤面。リーダーは、それぞれの自陣の端の真ん中にいます。うすく色がついているのは、両者の「手前3列」です。</figcaption>
+  </figure>
+</header>
+
+<section id="purpose">
+  <h2><span class="n">第1章</span>ゲームの目的</h2>
+  <p>2人で、交互にターンを進めます。盤面に出した自分のコマを進めて、<b>相手のリーダーがいるマスに入る</b>のが目標です。</p>
+  <p>カードの効果は、コンピューターが自動では処理しません。読み上げて、話し合いながら、自分たちでコマやカードを動かします。アプリは、動ける範囲を光らせたり、基本の判定を手伝ったりします。</p>
+  <div class="rule"><span class="t">用語のきまり</span>
+    <p>「手前」は自分の陣地に近い側、「奥」は相手の陣地に近い側です。盤面の横のならび（7マス）を「列」と呼びます。自陣のいちばん端の列が「1列目」で、リーダーが最初に立つ列です。</p></div>
+</section>
+
+<section id="prep">
+  <h2><span class="n">第2章</span>用意するもの</h2>
+  <ul>
+    <li><b>デッキ：ちょうど40枚。</b>同じ名前のカードは4枚まで入れられます。</li>
+    <li><b>リーダーカード：1枚。</b>デッキとは別に、1枚だけ選びます。</li>
+    <li>デッキには、<b>進化先専用カード</b>は入れられません（第12章）。</li>
+    <li>カードは、みんなが自作したものを使います。ATKとDEFは0〜999、コストは0〜99です。</li>
+  </ul>
+</section>
+
+<section id="cards">
+  <h2><span class="n">第3章</span>カードの種類と見かた</h2>
+  <div class="scroll"><table>
+    <tr><th>種類</th><th>どんなカード？</th></tr>
+    <tr><td>クリーチャー</td><td>盤面に出て、動いて戦うコマです。コスト・ATK・DEF・動けるマスを持ちます。</td></tr>
+    <tr><td>魔法</td><td>使うと効果が起き、使ったら墓地へ行きます。盤面には出ません。ATKとDEFはありません。</td></tr>
+    <tr><td>設置</td><td>空きマスに置く建物です。DEF（耐久）だけを持ち、動きません。効果範囲を持つことがあります。</td></tr>
+    <tr><td>リーダー</td><td>最初から盤面にいる大将です。コストはなく、デッキには入りません。</td></tr>
+    <tr><td>進化先専用</td><td>クリーチャーが進化したあとの姿です。コストなし。オレンジの枠と「進化」のリボンが目印です。</td></tr>
+  </table></div>
+  <div class="cardrow">
+    <div class="cardmock" role="img" aria-label="カードの見かたの例">
+  <div class="cm-hd"><span class="cm-cost">3<sup>①</sup></span><span class="cm-name">霧の番人<sup>②</sup></span></div>
+  <div class="cm-art">イラスト<sup>③</sup></div>
+  <div class="cm-sub">クリーチャー ／ 精霊<sup>④</sup></div>
+  <div class="cm-txt"><b>能力テキスト</b>がここに入ります。<sup>⑤</sup></div>
+  <div class="cm-st"><span>ATK 250</span><span>DEF 120<sup>⑥</sup></span></div>
+</div>
+    <ol class="legend" style="list-style:none">
+      <li>① コスト　召喚に必要なマナの数</li>
+      <li>② カード名</li>
+      <li>③ イラスト</li>
+      <li>④ 種類と種族（種族は自由な言葉）</li>
+      <li>⑤ 能力テキスト（太字が使われることもあります）</li>
+      <li>⑥ ATK（攻撃力）とDEF（防御力）</li>
+    </ol>
+  </div>
+  <h3>カードに設定できる能力</h3>
+  <ul>
+    <li><b>移動できるマス：</b>そのコマが1回で動けるマスです。決まったマスと、ぶつかるまで進める向き（香車のような動き）を組み合わせて設定します。設定がないカードは「上下左右に1マス」です。</li>
+    <li><b>跳躍：</b>間にいるコマを、敵味方を問わず飛び越えられます。</li>
+    <li><b>スピードアタッカー：</b>出したターンから動けます。</li>
+    <li><b>進化：</b>指定した場所まで進むと、別のカードに進化できます。</li>
+    <li><b>効果範囲（設置カード）：</b>効果が届くマスです。</li>
+  </ul>
+  <p>カードの枠のちがい（通常の枠つきと、絵が全面のレア）は、見た目だけの区別です。強さには関係ありません。</p>
+</section>
+
+<section id="board">
+  <h2><span class="n">第4章</span>盤面と最初の配置</h2>
+  <p>盤面は縦横7マスずつです。自分は手前（下）側、相手は奥（上）側にいます。ゲームが始まると、それぞれの1列目の真ん中（4マス目）にリーダーが置かれます。</p>
+  <p>自分から見ると、相手のコマは180度向きが反対になって見えます。向かい合って座っているときの見え方です。</p>
+</section>
+
+<section id="start">
+  <h2><span class="n">第5章</span>ゲームの始め方</h2>
+  <p>先攻・後攻を決めるために、「提示バトル」を行います。</p>
+  <ol>
+    <li>お互いに山札をよく混ぜ、5枚を引いて最初の手札にします。</li>
+    <li>それぞれ、手札から1枚を選び、同時に相手に見せます。</li>
+    <li><b>コストが大きい方</b>が、先攻にするか後攻にするかを選びます。</li>
+    <li><b>同じコストなら引き分け</b>です。見せたカードを山札の一番下に送り、山札の上から1枚を引いて手札を5枚に戻し、もう一度1からやり直します。</li>
+    <li>決まったら、最後に見せたカードも山札の一番下に送ります。そのあと山札から1枚引いて、手札を5枚にします。</li>
+  </ol>
+  <p>そのあと、リーダーが盤面に置かれ、先攻のターンから始まります。</p>
+</section>
+
+<section id="turn">
+  <h2><span class="n">第6章</span>1ターンの流れ</h2>
+  <ol class="flow">
+    <li><b>マナが増えて、回復する</b>自分の最大マナが1増えます。そのあと、マナが最大まで回復します。手札は減りません。</li>
+    <li><b>山札から1枚引く</b>ただし、先攻の最初のターンだけは引きません。このとき山札が0枚なら、その人の負けです。</li>
+    <li><b>好きな順番で行動する</b>マナが続く限り、何回でも召喚・設置・魔法の使用ができます。そのうえで、コマを動かす行動を1回だけ行えます。</li>
+    <li><b>ターンを終える</b>相手のターンになります。</li>
+  </ol>
+  <h3>例：先攻のあなたの最初の2ターン</h3>
+  <p>ターン1：最大マナ1。ドローなし。コスト1のクリーチャーを、手前3列のどこかに召喚します。出したターンは動けないので、そのままターン終了です。<br>
+  ターン2（相手）のあと、あなたのターン：最大マナ2。1枚引きます。ターン1に出したクリーチャーが動けるようになります。コスト2のカードを出し、前に出したクリーチャーを1マス進めて、ターンを終えます。</p>
+  <div class="house"><span class="t">このゲームの取り決め</span>
+    <p>マナに上限はありません。手札の枚数にも上限はありません。</p></div>
+</section>
+
+<section id="summon">
+  <h2><span class="n">第7章</span>召喚とオフサイドライン</h2>
+  <p>手札のクリーチャーや設置カードを盤面に出すことを「召喚」と呼びます。コストと同じ数のマナを払い、<b>空きマスだけ</b>に出せます。現在のマナが続く限り、何体でも出せます。</p>
+  <p>どのマスに出せるかは、<b>オフサイドライン</b>で決まります。</p>
+  <div class="rule"><span class="t">召喚できる場所</span>
+    <p>盤面にいる自分のコマ（クリーチャーとリーダー）のうち、<b>いちばん奥（相手側）</b>にいるコマがある列か、それより手前のマスです。</p>
+    <p>ただし、自分のコマがリーダーだけのときや、手前3列以内にしかいないときは、<b>自陣の手前3列</b>のどこにでも出せます。つまり、<b>1体目は必ず手前3列</b>に出します。</p></div>
+  <div class="figs">
+    <figure><div class="bd sm" role="img" aria-label="自分のコマがリーダーだけのとき、召喚できるのは下から3列のマス。"><i class=""></i><i class="alt"></i><i class=""></i><i class="alt p2 ld"><b>王</b></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class="zn zt"></i><i class="alt zn zt"></i><i class="zn zt"></i><i class="alt zn zt"></i><i class="zn zt"></i><i class="alt zn zt"></i><i class="zn zt"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt p1 ld"><b>王</b></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i></div><figcaption>コマがリーダーだけのとき。緑のマス（下の3列）に出せます。点線がオフサイドラインです。</figcaption></figure>
+    <figure><div class="bd sm" role="img" aria-label="自分のコマが下から4列目まで進んでいるとき、召喚できるのはそのコマがいる列から手前のマス。"><i class=""></i><i class="alt"></i><i class=""></i><i class="alt p2 ld"><b>王</b></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt zn zt"></i><i class="p1"><b>兵</b></i><i class="alt zn zt"></i><i class="zn zt"></i><i class="alt zn zt"></i><i class="zn zt"></i><i class="alt zn zt"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i><i class="alt p1 ld"><b>王</b></i><i class="zn"></i><i class="alt zn"></i><i class="zn"></i></div><figcaption>下から4列目まで進んだコマがいるとき。そのコマの列から手前の緑のマスに出せます。</figcaption></figure>
+  </div>
+  <ul>
+    <li>設置カードは、「いちばん奥のコマ」には数えません。置ける場所は、クリーチャーと同じです。</li>
+    <li>魔法は、盤面には出しません。</li>
+  </ul>
+</section>
+
+<section id="move">
+  <h2><span class="n">第8章</span>移動と攻撃</h2>
+  <div class="rule"><span class="t">大事な決まり</span>
+    <ul>
+      <li><b>行動できるのは、1ターンに1回だけ。</b>コマ1つを、移動か攻撃のどちらかで動かします。</li>
+      <li><b>召喚酔い：</b>盤面に出したターンは、そのコマを動かせません。</li>
+      <li><b>スピードアタッカー：</b>出したターンから動けます。ただし、そのターンには<b>相手のリーダーのマスには入れません</b>。</li>
+    </ul></div>
+  <h3>動けるマス</h3>
+  <p>動けるマスは、カードごとに決まっています。図の「自」がそのコマで、上が前方です。相手側のコマは向きが反対になります（盤面で見たとおりです）。</p>
+  <div class="mpfigs">
+    <figure><div class="mp" style="grid-template-columns:repeat(5,1fr)" role="img" aria-label="上下左右に1マス"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i class="on"></i><i class="ctr"><b>自</b></i><i class="on"></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><figcaption>上下左右に1マス（設定のないカード）</figcaption></figure>
+    <figure><div class="mp" style="grid-template-columns:repeat(5,1fr)" role="img" aria-label="8方向に1マス"><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i class="on"></i><i class="ctr"><b>自</b></i><i class="on"></i><i></i><i></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div><figcaption>8方向に1マス</figcaption></figure>
+    <figure><div class="mp" style="grid-template-columns:repeat(5,1fr)" role="img" aria-label="前に1〜2マス"><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i class="ctr"><b>自</b></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><figcaption>前に1〜2マス</figcaption></figure>
+    <figure><div class="mp" style="grid-template-columns:repeat(7,1fr)" role="img" aria-label="香車：前にどこまでも"><i></i><i></i><i></i><i class="sl"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="sl"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="sl"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="ctr"><b>自</b></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><figcaption>香車：前にどこまでも</figcaption></figure>
+    <figure><div class="mp" style="grid-template-columns:repeat(7,1fr)" role="img" aria-label="飛車：十字にどこまでも"><i></i><i></i><i></i><i class="sl"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="sl"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="sl"></i><i></i><i></i><i></i><i class="sl"></i><i class="sl"></i><i class="sl"></i><i class="ctr"><b>自</b></i><i class="sl"></i><i class="sl"></i><i class="sl"></i><i></i><i></i><i></i><i class="sl"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="sl"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="sl"></i><i></i><i></i><i></i></div><figcaption>飛車：十字にどこまでも</figcaption></figure>
+    <figure><div class="mp" style="grid-template-columns:repeat(7,1fr)" role="img" aria-label="L字（跳躍で間を飛び越える）"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="ctr"><b>自</b></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><figcaption>L字（跳躍で間を飛び越える）</figcaption></figure>
+  </div>
+  <ul>
+    <li>空きマスには移動できます。<b>相手のコマがいるマスに動こうとすると、攻撃</b>になります。</li>
+    <li>味方のコマがいるマスには、動けません。</li>
+  </ul>
+  <h3>間にコマがあるとき（跳躍）</h3>
+  <p>ふつうは、進む道の途中に敵や味方のコマがあると、その先へは動けません。<b>跳躍</b>を持つコマは、間のコマを飛び越えられます。</p>
+  <div class="figs">
+    <figure><div class="strip" role="img" aria-label="跳躍なし：間に敵がいるので、その先には動けない"><i class="me"><b>自</b></i><i class="foe"><b>敵</b></i><i class="tg"><b>×</b></i></div><figcaption>跳躍なし：間に敵がいて、その先には動けません。</figcaption></figure>
+    <figure><div class="strip" role="img" aria-label="跳躍あり：間の敵を飛び越えて、その先に動ける"><i class="me"><b>自</b></i><i class="foe"><b>敵</b></i><i class="tg ok"><b>○</b></i></div><figcaption>跳躍あり：間の敵を飛び越えて、その先に動けます。</figcaption></figure>
+  </div>
+  <h3>どこまでも進める動き</h3>
+  <p>香車や飛車のように「どこまでも」進める向きを持つコマは、盤の端か、コマにぶつかるまで進めます。空きマスは、どこでも行き先に選べます。</p>
+  <div class="figs">
+    <figure><div class="strip" role="img" aria-label="どこまでも進める動き：空きマスを進み、最初にぶつかった敵を攻撃できる"><i class="me"><b>自</b></i><i class="emp"><b></b></i><i class="emp"><b></b></i><i class="foe"><b>敵</b></i></div><figcaption>空きマスを進み、最初にぶつかった敵を攻撃できます。味方にぶつかると、そこで止まります。跳躍があれば、そのコマも越えて進めます。</figcaption></figure>
+  </div>
+</section>
+
+<section id="battle">
+  <h2><span class="n">第9章</span>戦闘</h2>
+  <p>動く先のマスに相手のコマがいると、戦闘が起こります。攻撃した側のATKと、守る側のDEFで結果が決まります（この表はコマ同士の場合です。設置カードが相手のときの結果は第10章をご覧ください）。</p>
+  <div class="scroll"><table>
+    <tr><th>ATKとDEF</th><th>結果</th></tr>
+    <tr><td>ATK ＞ DEF</td><td>守る側が破壊されて墓地へ行きます。攻撃した側は、そのマスに進みます。</td></tr>
+    <tr><td>ATK ＝ DEF</td><td>相打ち。両方とも破壊されて墓地へ行き、マスは空きます。</td></tr>
+    <tr><td>ATK ＜ DEF</td><td>攻撃した側が破壊されて墓地へ行きます。守る側はそのまま残ります。</td></tr>
+  </table></div>
+  <div class="house"><span class="t">勝ち負けを自分たちで選ぶ</span>
+    <p>攻撃力を上げるカードなどがあるので、アプリでは、戦闘の結果を<b>自分たちで選びます</b>。ポップアップに「攻撃側の勝ち／相打ち／攻撃側の負け／どちらも壊れない」が出ます。数値どおりの結果には印がつきます。</p>
+    <p>その場でATKとDEFを増やしたり減らしたりして、バフなどの効果を反映してから選べます。どちらのプレイヤーが選んでもかまいません。この設定は、対戦の開始前に切り替えられます。切ると、上の表どおりに自動で決まります。</p></div>
+</section>
+
+<section id="struct">
+  <h2><span class="n">第10章</span>設置カード</h2>
+  <p>設置カードは、空きマスに置く構造物です。動かず、DEF（耐久値）だけを持ちます。コマと同じように、そのマスを占めます。</p>
+  <ul>
+    <li>相手のクリーチャーの<b>攻撃の対象</b>になります。</li>
+    <li>攻撃したコマのATKが設置カードのDEF<b>以上</b>なら、設置カードは破壊されて墓地へ行きます。破壊したあとも、攻撃したコマは動かず、元のマスに残ります。</li>
+    <li>設置カードのDEFが攻撃したコマのATKを<b>上回った</b>ときは、コマ同士の戦闘と同じように、<b>攻撃したコマの方が破壊されます。</b>設置カードは残ります。</li>
+  </ul>
+  <p>設置カードには、効果が届く<b>効果範囲</b>を持つものがあります。盤面で設置カードを選ぶか、カーソルを合わせると、範囲が紫に光ります。効果そのものは、みんなで読んで処理します。</p>
+  <div class="figs"><figure><div class="bd sm" role="img" aria-label="設置カード「塔」の効果範囲。塔の前と左右の5マスが紫に光っている。"><i class=""></i><i class="alt"></i><i class=""></i><i class="alt p2 ld"><b>王</b></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt rg"></i><i class="rg"></i><i class="alt rg"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class="rg"></i><i class="alt p1 st"><b>塔</b></i><i class="rg"></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt p1 ld"><b>王</b></i><i class=""></i><i class="alt"></i><i class=""></i></div><figcaption>設置カード「塔」と、その効果範囲（紫のマス）。範囲の向きは、置いた人から見た向きです。</figcaption></figure></div>
+</section>
+
+<section id="leader">
+  <h2><span class="n">第11章</span>リーダー</h2>
+  <ul>
+    <li>ゲーム開始時に、盤面へ置かれます。コストはなく、召喚酔いもありません。</li>
+    <li>ATKを持ち、<b>ほかのコマと同じように</b>動いたり攻撃したりできます。動き方は、リーダーカードの設定に従います。行動は、ほかのコマと合わせて1ターンに1回です。</li>
+    <li><b>相手のリーダーのマスに入れば勝ちです。</b>戦闘は起こらず、ATKは関係ありません。</li>
+    <li>自分のリーダーが破壊されたら、負けです（他のコマに攻撃されて負けることもあります）。</li>
+  </ul>
+  <div class="house"><span class="t">リーダーにDEFはありません</span>
+    <p>リーダーが「守る側」になるとき（相手のコマが進入してくるとき）は、ATK・DEFの数値に関係なく、進入した側が必ず勝ちます。そのためリーダーにはDEFを設定しません。相手のコマを攻撃するときのATKだけを持ちます。</p></div>
+</section>
+
+<section id="evolve">
+  <h2><span class="n">第12章</span>進化</h2>
+  <p>クリーチャーカードには、<b>進化先のカード</b>と、<b>進化できる場所</b>を設定できます。進化先には、<b>進化先専用カード</b>（あとで説明します）だけを選べます。進化できる場所は、「相手の陣地の奥から○列以内」のように決めます。「盤面のどこでも」にすることもできます。</p>
+  <div class="figs"><figure><div class="bd sm" role="img" aria-label="相手の陣地の奥から3列（上の3列）が進化できる場所。"><i class="ev"></i><i class="alt ev"></i><i class="ev"></i><i class="alt p2 ld"><b>王</b></i><i class="ev"></i><i class="alt ev"></i><i class="ev"></i><i class="alt ev"></i><i class="ev"></i><i class="alt ev"></i><i class="ev"></i><i class="alt ev"></i><i class="ev"></i><i class="alt ev"></i><i class="ev"></i><i class="alt ev"></i><i class="p1"><b>兵</b></i><i class="alt ev"></i><i class="ev"></i><i class="alt ev"></i><i class="ev"></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt"></i><i class=""></i><i class="alt p1 ld"><b>王</b></i><i class=""></i><i class="alt"></i><i class=""></i></div><figcaption>進化できる場所が「奥から3列以内」のとき。上の3列（金色）に入ると進化できます。</figcaption></figure></div>
+  <ol>
+    <li>コマが、移動か攻撃でその場所に入ると、「進化しますか？」と聞かれます。</li>
+    <li>「進化する」を選ぶと、名前・ATK・DEF・動けるマス・能力が、進化先のカードのものに変わります。</li>
+    <li>「しない」を選んでも、その場所にいる間は、コマを選んで「進化する」を押せば、あとから進化できます。</li>
+  </ol>
+  <ul>
+    <li>進化しても、行動は増えません。すでに動いたコマは、そのターンは動けないままです。</li>
+    <li><b>進化先専用カード</b>は、コストがいりません。デッキには入れられず、他のカードの進化先にしたときだけ、盤面に登場します。カード作成で「進化先専用カード」にチェックを入れて作ります。</li>
+    <li>進化したコマが破壊されたり手札に戻ったりするときは、<b>元のカード</b>が墓地や手札に行きます。</li>
+  </ul>
+</section>
+
+<section id="win">
+  <h2><span class="n">第13章</span>勝敗が決まるとき</h2>
+  <ol>
+    <li><b>リーダーへの進入：</b>自分のコマが、相手のリーダーのマスに入ったら、勝ちです。</li>
+    <li><b>山札切れ：</b>自分のターンの最初のドローのとき、山札が0枚だったら、その人の負けです。</li>
+    <li><b>リーダーの破壊：</b>自分のリーダーが破壊されたら、負けです（相打ちで壊れたときも同じです）。</li>
+    <li><b>降参：</b>「降参する」を押した人の負けです。</li>
+  </ol>
+  <p>勝敗が決まると、勝ち負けの画面が出ます。盤面を見返すこともできます。</p>
+</section>
+
+<section id="tools">
+  <h2><span class="n">第14章</span>効果の処理と便利な操作</h2>
+  <p>カードの効果は、みんなで読んで処理します。そのために、必要な操作をボタンで用意しています。操作のボタンは、画面の下の操作バーにまとまっています。</p>
+  <h3>カードを使う・出す</h3>
+  <ul>
+    <li><b>魔法を使う：</b>マナを払って墓地へ送ります。何を使ったかが、両方の画面に大きく出ます。</li>
+    <li><b>特殊召喚：</b>マナを使わずに召喚します。オフサイドの決まりは守ります。墓地のカードを、マナを使わずに盤面へ出すこともできます。</li>
+    <li><b>相手に見せる：</b>手札のカードを1枚、相手に見せます。</li>
+    <li><b>追加行動を与える：</b>効果で行動が増えるときに、行動の回数を戻します。</li>
+    <li><b>入れ替える：</b>盤面のコマを2つ選んで、位置を入れ替えます。</li>
+  </ul>
+  <h3>カードを移す</h3>
+  <ul>
+    <li>墓地のカードを、手札や山札の上・下に戻します。</li>
+    <li>盤面のコマを、手札や山札の上・下に戻します（リーダーは戻せません）。</li>
+    <li>手札のカードを、墓地に送ったり、山札の上・下に戻したりします。</li>
+    <li>山札の上を、<b>自分だけ</b>が見ます。見たカードは、手札に加える・墓地へ送る・山札の下へ送る、のどれかにできます。</li>
+    <li>山札の上から1枚を墓地へ送ります。山札をシャッフルします。</li>
+  </ul>
+  <h3>数値を変える</h3>
+  <ul>
+    <li>コマのATKとDEFを、±1や±5で増やしたり減らしたりします（リーダーはATKだけです）。</li>
+    <li>コマに、跳躍やスピードアタッカーを一時的に付けます。</li>
+    <li>マナの「現在」は、手で1ずつ増やしたり減らしたりできます。特定の種族のコストを軽減するカードなど、その場だけマナが変わる効果に使います。</li>
+    <li>マナの「上限」を1増やすと、<b>現在のマナも一緒に1増えます</b>（マナが加速するカードなどに使います）。上限を減らすときは、上限だけが減ります。</li>
+  </ul>
+  <div class="house"><span class="t">自由配置モード</span>
+    <p>ONにすると、マナ不足・オフサイド・行動の制限を気にせずに、カードを置いたり、コマを動かしたりできます。<b>自分のコマだけでなく、相手のコマも動かせます。</b>間違えたときのやり直しや、効果の処理に使います。使うときは、相手に一言ことわってからにしましょう。</p></div>
+</section>
+
+<section id="app">
+  <h2><span class="n">第15章</span>アプリの使いかた</h2>
+  <ol>
+    <li><b>カード工房：</b>カードを作ります。名前・コスト・種類・種族・ATK・DEF・イラスト・能力テキストのほか、動けるマス・跳躍・スピードアタッカー・進化・設置の効果範囲・文字の大きさ・上に重ねる透過画像も設定できます。カードは1枚ずつPNG画像で保存できます。</li>
+    <li><b>デッキ構築：</b>作ったカードから40枚を選び、リーダーを1枚選びます。デッキ専用の裏面（スリーブ）も選べます。</li>
+    <li><b>対戦：</b>1人が「部屋を作る」で4桁の番号を作り、相手に伝えます。相手は番号を入れて「入る」を押します。2人ともデッキを選んで「準備完了」を押すと始まります。ひとりで試すときは、1つの画面で2人分を操作できます。</li>
+    <li><b>カードの同期：</b>カード工房の「同期」で、友達と作ったカードやデッキを送り合えます。</li>
+    <li><b>盤面の見た目：</b>対戦中に、7種類から選べます。</li>
+    <li><b>効果音とターン交代：</b>召喚・移動・攻撃・破壊・進化・勝敗などで音が鳴ります。右上の「効果音」で消せます。ターンが変わると、画面に0.5秒ほど「プレイヤー1のターン」のような帯が出ます。</li>
+  </ol>
+  <p>カーソルをカードやコマに合わせると、画像とは別に、説明文と動けるマスの図が出ます。</p>
+</section>
+
+<section id="faq">
+  <h2><span class="n">第16章</span>よくある疑問</h2>
+  <dl class="q">
+    <dt>1ターンに、何体のコマを動かせますか？</dt>
+    <dd>1体だけです。1回動かしたら、そのターンの行動は終わりです。</dd>
+    <dt>味方のコマを攻撃できますか？</dt>
+    <dd>できません。味方のいるマスには動けません。</dd>
+    <dt>スピードアタッカーは、出したターンに相手のリーダーを倒せますか？</dt>
+    <dd>倒せません。出したターンは、相手のリーダーのマスに入れません。</dd>
+    <dt>設置カードのDEFと同じATKで攻撃したら？</dt>
+    <dd>設置カードは破壊されます（ATKがDEF以上で破壊）。クリーチャー同士とはちがい、DEFと同じでも壊れます。</dd>
+    <dt>ATKが低いコマで、DEFの高い設置カードを攻撃したら？</dt>
+    <dd>設置カードのDEFがATKを上回っているので、コマ同士の戦闘と同じように、攻撃した側のコマが破壊されます。設置カードは残ります。</dd>
+    <dt>リーダーにDEFはないのですか？</dt>
+    <dd>ありません。相手のコマがリーダーのマスに入れば、数値に関係なくその時点で勝敗が決まるので、リーダーが「守る側」になって破壊されるかどうかを判定する場面自体がありません。リーダーが持つのは、他のコマを攻撃するときのATKだけです。</dd>
+    <dt>設置カードは、オフサイドの基準になりますか？</dt>
+    <dd>なりません。クリーチャーとリーダーだけが基準です。</dd>
+    <dt>特殊召喚でも、オフサイドは守りますか？</dt>
+    <dd>守ります。マナだけを使わない召喚です。</dd>
+    <dt>進化すると、行動を追加でできますか？</dt>
+    <dd>できません。進化しても行動の回数は変わりません。</dd>
+    <dt>進化先には、どんなカードでも選べますか？</dt>
+    <dd>選べません。「進化先専用カード」として作ったクリーチャーだけを選べます。</dd>
+    <dt>リーダーが相打ちで壊れたら？</dt>
+    <dd>そのリーダーの持ち主の負けです。</dd>
+  </dl>
+  <div class="house"><span class="t">この本について</span>
+    <p>金色の線の囲みは、<b>このゲームでの取り決め</b>です。元のルールに書かれていなかった細かい点を、いまのアプリの動きに合わせて決めています。話し合って変えたいときは、そこを見直しましょう。</p></div>
+  <p class="foot">このルールブックは、アプリのいまの動きに合わせて書かれています。ルールを変えたときは、書き直しましょう。<br><a class="toplink" href="#purpose">最初に戻る</a></p>
+</section>
+
+</main>
+</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var fab = document.getElementById("rbToggle"), modal = document.getElementById("rbModal"), closeBtn = document.getElementById("rbClose");
+  function open(){ modal.hidden = false; fab.setAttribute("aria-expanded","true"); closeBtn.focus(); }
+  function close(){ modal.hidden = true; fab.setAttribute("aria-expanded","false"); fab.focus(); }
+  fab.addEventListener("click", open);
+  closeBtn.addEventListener("click", close);
+  modal.addEventListener("keydown", function(e){ if (e.key === "Escape") close(); });
+  var links = [].slice.call(document.querySelectorAll("#rbwrap .toc a")), map = {};
+  links.forEach(function(a){ map[a.getAttribute("href").slice(1)] = a; });
+  if (!("IntersectionObserver" in window)) return;
+  var cur = null;
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (e.isIntersecting){
+        if (cur) cur.removeAttribute("aria-current");
+        cur = map[e.target.id]; if (cur) cur.setAttribute("aria-current","true");
+      }
+    });
+  }, {root: document.getElementById("rbwrap"), rootMargin:"-20% 0px -70% 0px"});
+  document.querySelectorAll("#rbwrap main section[id]").forEach(function(s){ io.observe(s); });
+})();
+</script>
+
 </body>
 </html>
