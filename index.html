@@ -99,6 +99,8 @@ input:disabled{opacity:.45;cursor:not-allowed}
 .lib li .acts button.danger{border-color:var(--danger);color:var(--danger)}
 .lib li.empty{grid-column:1/-1;color:var(--muted);padding:26px 0}
 .note{font-size:.85rem;color:var(--muted);margin:0 0 12px}
+.note.warn{color:var(--ink);border:1px solid var(--danger);border-radius:8px;padding:8px 10px;background:var(--panel)}
+.note .btn{margin-left:6px;padding:4px 10px;font-size:.85rem}
 dialog{border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);width:min(560px,92vw)}
 dialog::backdrop{background:rgba(0,0,0,.45)}
 dialog textarea{width:100%;height:190px;padding:8px;border:1px solid var(--line);border-radius:7px;background:var(--field);font-size:.8rem}
@@ -554,6 +556,24 @@ body.ingame .wrap{padding:8px 10px 12px}
 .rbmodalbar button{padding:6px 14px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);cursor:pointer;font-size:.9rem;font-weight:700}
 #rbwrap{flex:1;min-height:0}
 
+
+/* ---- チュートリアル ---- */
+.tutfab{right:116px}
+.tutcoach{position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);left:50%;transform:translateX(-50%);width:min(560px,calc(100vw - 20px));z-index:58;background:var(--panel);color:var(--ink);border:2px solid var(--accent);border-radius:12px;padding:8px 14px 12px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.tutrow{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.8rem;color:var(--muted)}
+.tutq{padding:2px 10px;border:1px solid var(--line);border-radius:7px;background:var(--field);color:var(--ink);cursor:pointer;font-size:.78rem}
+.tutbar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin:5px 0 6px}
+.tutbar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.tutcoach h3{margin:0 0 2px;font-size:1.02rem}
+.tutcoach p{margin:4px 0 8px;font-size:.92rem;line-height:1.65}
+.tutbtns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.tutbtns button{padding:6px 14px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);cursor:pointer;font-size:.9rem}
+.tutbtns button.pri{background:var(--accent);color:var(--onaccent);border-color:var(--accent);font-weight:700}
+.tut-on .pop{padding-top:calc(var(--tutH,200px) + 24px);align-items:start}
+.tut-on .popbox{max-height:calc(100vh - var(--tutH,200px) - 48px)}
+.tut-hl{outline:3px solid #ffb300!important;outline-offset:2px;border-radius:6px;animation:tutPulse .9s ease-in-out infinite alternate}
+@keyframes tutPulse{from{box-shadow:0 0 0 0 rgba(255,179,0,.75)}to{box-shadow:0 0 0 9px rgba(255,179,0,0)}}
+@media (prefers-reduced-motion:reduce){.tut-hl{animation:none}}
 </style>
 </head>
 <body>
@@ -738,6 +758,8 @@ body.ingame .wrap{padding:8px 10px 12px}
   </div>
   <p class="hint" id="pngAllMsg" role="status" aria-live="polite"></p>
   <p class="note" id="persistNote" hidden>この環境ではブラウザ保存が使えないため、カードはタブを閉じると消えます。バックアップで書き出してください。</p>
+  <p class="note warn" id="lostNote" hidden>以前に保存したカードが見つかりません。ブラウザによって、保存データが消された可能性があります。バックアップのファイルがあれば、読み込んで元に戻せます。 <button type="button" class="btn" data-openbk="1">バックアップ画面を開く</button></p>
+  <p class="note" id="bkRemind" hidden><span id="bkRemindText"></span> <button type="button" class="btn" data-openbk="1">バックアップする</button></p>
   <ul class="lib" id="lib"></ul>
 
   <details class="panel" id="syncBox" style="margin-top:22px">
@@ -915,14 +937,24 @@ body.ingame .wrap{padding:8px 10px 12px}
 
 <dialog id="bk">
   <h2 style="margin-bottom:8px">バックアップ</h2>
-  <p class="hint" style="margin-top:0">「書き出し」で全カードとデッキのデータを表示します。コピーして保存してください。読み込むときは貼り付けて「読み込み」を押します（既存のデータは残り、追加されます）。</p>
-  <textarea id="bkText" aria-label="バックアップデータ"></textarea>
+  <p class="hint" style="margin-top:0">全カードとデッキを、<b>ファイル</b>に保存します。ファイルを大切に取っておけば、ブラウザの保存データが消えても、あとから読み込んで元に戻せます。読み込むと、いまのデータは残り、ファイルの中身が追加されます。</p>
   <div class="actions">
-    <button type="button" class="btn primary" id="bkOut">書き出し</button>
-    <button type="button" class="btn" id="bkIn">読み込み</button>
+    <button type="button" class="btn primary" id="bkFile">ファイルに保存</button>
+    <button type="button" class="btn" id="bkLoad">ファイルから読み込み</button>
     <button type="button" class="btn" id="bkClose">閉じる</button>
   </div>
+  <input type="file" id="bkPick" accept=".json,.txt,application/json,text/plain" hidden aria-label="バックアップのファイルを選ぶ">
+  <p class="hint" id="bkLast" style="margin:10px 0 0"></p>
   <p class="status" id="bkStatus" role="status" aria-live="polite"></p>
+  <p class="hint" id="bkPersist" style="margin:8px 0 0"></p>
+  <details style="margin-top:10px">
+    <summary>ファイルが使えないとき（テキストで書き出す・貼り付ける）</summary>
+    <textarea id="bkText" aria-label="バックアップデータ"></textarea>
+    <div class="actions">
+      <button type="button" class="btn" id="bkOut">テキストで書き出し</button>
+      <button type="button" class="btn" id="bkIn">テキストから読み込み</button>
+    </div>
+  </details>
 </dialog>
 
 <script>
@@ -1194,6 +1226,8 @@ async function save(){
 async function refresh(){
   cards = (await DB.all()).sort((a, b) => b.updatedAt - a.updatedAt);
   renderLib(); renderEvolveOptions();
+  lsSet(LS_HAD, cards.length ? "1" : "0");
+  if (typeof updateBackupInfo === "function" && $("bkRemind")) updateBackupInfo();
 }
 function renderLib(){
   const q = $("q").value.trim().toLowerCase(), ft = val("ftype");
@@ -2143,7 +2177,7 @@ $("gStart").onclick = () => {
   G = Rules.newGame([a, b], {manualBattle:$("sManual").checked});
   showGame(); renderGame();
 };
-function leaveGame(){ oClose(); G = null; ui.sel = null; $("gGame").hidden = true; $("gSetup").hidden = false; renderSetup(); syncIngame(); }
+function leaveGame(){ if (typeof tutEnd === 'function' && TUT.on) tutEnd(); oClose(); G = null; ui.sel = null; $("gGame").hidden = true; $("gSetup").hidden = false; renderSetup(); syncIngame(); }
 
 /* ----- 盤面の表示 ----- */
 const hasJump = c => !!(c && (c.jump || c.jumpEnemy || c.jumpAlly));
@@ -2417,6 +2451,7 @@ function renderGame(){
   renderBoard(); renderHands(); renderGraves(); renderBars(); renderTurn(); renderActs(); renderSel(); renderPopup();
   $("glog").innerHTML = G.log.slice(-10).reverse().map(m => `<li>${esc(m)}</li>`).join("");
   playLogSfx();
+  tutCheck();
 }
 
 /* ----- カードにカーソルを合わせると詳細 ----- */
@@ -2961,19 +2996,58 @@ $("pngAll").onclick = async () => {          // 表示中のカードを、1枚�
   msg(list.length + "枚を、1枚ずつ別のPNGファイルにして保存しました。ダウンロード先のフォルダを確認してください。（ブラウザから「複数のファイルのダウンロード」の確認が出たら、許可してください）");
 };
 
-/* ---------- バックアップ ---------- */
+/* ---------- バックアップ（ファイルで保存・読み込み） ---------- */
 const bk = $("bk"), bkStatus = m => { $("bkStatus").textContent = m; };
-$("openBk").onclick = () => { bkStatus(""); $("bkText").value = ""; bk.showModal(); };
+const LS_BK = "duema3-last-backup", LS_HAD = "duema3-had-data";
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const daysSince = t => Math.floor((Date.now() - t) / 86400000);
+const fmtDate = t => { const d = new Date(t); return d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate(); };
+async function persistState(){ try { if (navigator.storage && navigator.storage.persisted) return await navigator.storage.persisted(); } catch (e) {} return null; }
+async function askPersist(){            // ブラウザに「この保存データは消さないで」とお願いする
+  try { if (navigator.storage && navigator.storage.persist && !(await navigator.storage.persisted())) await navigator.storage.persist(); } catch (e) {}
+}
+function updateBackupInfo(){
+  const t = Number(lsGet(LS_BK)) || 0;
+  $("bkLast").textContent = t ? "最後にファイルへ保存した日：" + fmtDate(t) + "（" + (daysSince(t) === 0 ? "きょう" : daysSince(t) + "日前") + "）" : "まだ、ファイルに保存していません。";
+  const need = cards.length + decks.length > 0 && (!t || daysSince(t) >= 7);
+  $("bkRemind").hidden = !need;
+  if (need) $("bkRemindText").textContent = t ? "バックアップのファイルが" + daysSince(t) + "日前のままです。ときどき、ファイルに保存しておくと安心です。" : "カードを、まだファイルに保存していません。ブラウザの保存データが消えても戻せるように、ファイルに保存しておくと安心です。";
+}
+async function updatePersistText(){
+  const ps = await persistState();
+  $("bkPersist").textContent = ps === true ? "ブラウザの保存データは「消さないで」というお願いが受け入れられています。それでも、ファイルへの保存はときどきしておくと安心です。"
+    : "ブラウザは、しばらく使わないと保存データを消すことがあります。大切なカードは、ファイルに保存しておいてください。（iPhone・iPadのSafariは、「ホーム画面に追加」して開くと消えにくくなります）";
+}
+$("openBk").onclick = () => { bkStatus(""); $("bkText").value = ""; updateBackupInfo(); updatePersistText(); bk.showModal(); };
+document.addEventListener("click", ev => { if (ev.target.closest && ev.target.closest("[data-openbk]")) $("openBk").click(); });
 $("bkClose").onclick = () => bk.close();
+const stamp = () => { const d = new Date(), p = n => String(n).padStart(2, "0"); return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()); };
+$("bkFile").onclick = () => {
+  if (!cards.length && !decks.length) { bkStatus("保存するカードが、まだありません。"); return; }
+  const blob = new Blob([JSON.stringify({app:"duema3", version:1, savedAt:Date.now(), cards, decks})], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "duema3-backup-" + stamp() + ".json";
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  lsSet(LS_BK, String(Date.now())); updateBackupInfo();
+  bkStatus(cards.length + "枚のカードと" + decks.length + "件のデッキを、ファイルに保存しました。ダウンロードしたファイルを、なくさない場所に取っておいてください。");
+};
+$("bkLoad").onclick = () => { $("bkPick").click(); };
+$("bkPick").onchange = async () => {
+  const f = $("bkPick").files && $("bkPick").files[0]; if (!f) return;
+  let text = ""; try { text = await f.text(); } catch (e) { bkStatus("ファイルを読めませんでした。"); return; }
+  $("bkPick").value = "";
+  await importBackup(text, f.name);
+};
 $("bkOut").onclick = async () => {
   $("bkText").value = JSON.stringify({cards, decks});
   $("bkText").select();
   try { await navigator.clipboard.writeText($("bkText").value); bkStatus(cards.length + "枚のカードと" + decks.length + "件のデッキを書き出し、コピーしました。"); }
   catch (e) { bkStatus(cards.length + "枚のカードと" + decks.length + "件のデッキを書き出しました。テキストをコピーしてください。"); }
 };
-$("bkIn").onclick = async () => {
+$("bkIn").onclick = () => importBackup($("bkText").value, "");
+async function importBackup(text, fname){
   let p, arr; const idMap = {};
-  try { p = JSON.parse($("bkText").value); arr = Array.isArray(p) ? p : p.cards; if (!Array.isArray(arr)) throw 0; } catch (e) { bkStatus("読み込めませんでした。書き出したデータをそのまま貼り付けてください。"); return; }
+  try { p = JSON.parse(text); arr = Array.isArray(p) ? p : p.cards; if (!Array.isArray(arr)) throw 0; } catch (e) { bkStatus("読み込めませんでした。このアプリで保存したバックアップのファイルを選んでください。"); return; }
   let n = 0;
   for (const c of arr) {
     if (!c || !c.name || !TYPE_LABEL[c.type]) continue;
@@ -2998,8 +3072,9 @@ $("bkIn").onclick = async () => {
     dn++;
   }
   await refresh(); await refreshDecks();
+  $("lostNote").hidden = true; updateBackupInfo(); askPersist();
   bkStatus(n + "枚のカード" + (dn ? "と" + dn + "件のデッキ" : "") + "を追加しました。");
-};
+}
 
 /* ---------- イベント ---------- */
 $("form").addEventListener("input", render);
@@ -3086,13 +3161,156 @@ $("text").addEventListener("paste", e => {
   document.execCommand("insertText", false, t);
 });
 
+/* ---------- チュートリアル（実際に操作しながら覚える） ---------- */
+const TUT_CARDS = [{"id":"tut0","name":"ミーシャ","cost":1,"type":"creature","race":"猫人族/ブチギレ","atk":10,"def":5,"rarity":"rare","text":"","moveCells":[[-1,0],[-1,-1],[-1,1]],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut1","name":"ルノア・カールトン","cost":2,"type":"creature","race":"ブチギレ","atk":10,"def":5,"rarity":"rare","text":"場にミーシャがいるなら自分ブチギレのDEF＋１０","moveCells":[[-1,0],[1,0],[0,-1],[0,1]],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut2","name":"ティーダ","cost":3,"type":"creature","race":"ブチギレ","atk":20,"def":10,"rarity":"rare","text":"跳躍","moveCells":[[-2,0],[-3,-1],[-3,1]],"slideDirs":[],"jump":true,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut3","name":"エルザ・アーチフィールド","cost":5,"type":"creature","race":"ブチギレ","atk":75,"def":10,"rarity":"rare","text":"","moveCells":[[0,-1],[0,1],[0,-2],[0,2],[1,0]],"slideDirs":[[-1,0]],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut4","name":"ミレイ","cost":6,"type":"creature","race":"ブチギレ","atk":25,"def":15,"rarity":"normal","text":"このターン、行動回数＋１","moveCells":[[-1,1],[-1,-1],[-2,-2],[-2,2],[-2,0],[-1,0]],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut5","name":"シルビア","cost":1,"type":"creature","race":"ブチギレ","atk":10,"def":10,"rarity":"normal","text":"盤面にある間、隣にある駒と<b>結婚</b>できる<br><b>結婚した</b>カードが動くとき、一緒にこの駒も動かす","moveCells":[[-1,0]],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut6","name":"ロベルト・アーティ","cost":0,"type":"creature","race":"ブチギレ","atk":5,"def":5,"rarity":"rare","text":"このクリーチャーが墓地へ送られるとき、『エリザベートレイストンが、この国に報復を』と言っても良い","moveCells":[[-1,0]],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut7","name":"エリザベート","cost":0,"type":"leader","race":"ブチギレ","atk":70,"def":"","rarity":"rare","text":"自分がブチギレを召喚する時、山札から1枚引く","moveCells":[[-1,1],[-1,-1],[1,-1],[1,1],[1,0],[0,1],[-1,0],[0,-1],[-2,0],[-2,1],[-2,-1]],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut8","name":"ハルドリア王国 王宮","cost":3,"type":"structure","race":"","atk":"","def":10,"rarity":"normal","text":"自分のブチギレのATK＋15","moveCells":[],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut9","name":"あの石鹸は生命線だから","cost":2,"type":"magic","race":"","atk":"","def":"","rarity":"normal","text":"自分のマナ＋１","moveCells":[],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut10","name":"グッバイララバイ","cost":4,"type":"magic","race":"","atk":"","def":"","rarity":"rare","text":"相手のクリーチャーを一体選んで破壊する","moveCells":[],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut11","name":"巴マミ","cost":5,"type":"creature","race":"魔法少女","atk":50,"def":30,"rarity":"rare","text":"召喚されるか、バトルに勝ったとき手札にTiro Finaleがあれば、コストを払わず唱えてもよい","moveCells":[],"slideDirs":[[-1,0],[-1,1],[-1,-1]],"jump":false,"sa":false,"rangeCells":[],"textScale":90,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut12","name":"美樹さやか","cost":3,"type":"creature","race":"魔法少女","atk":10,"def":60,"rarity":"rare","text":"進化　1番奥の列","moveCells":[[-1,0],[-2,0],[-1,-1],[-1,1]],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut13","name":"佐倉杏子","cost":6,"type":"creature","race":"魔法少女","atk":60,"def":25,"rarity":"rare","text":"バトルに勝ったなら、2マスまで後ろに下がってもよい","moveCells":[[-1,1],[-1,0],[-1,-1],[0,-1],[0,1],[-2,0],[-2,1],[-2,-1],[-3,0]],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false},{"id":"tut14","name":"フリード・ハルドリア","cost":0,"type":"leader","race":"ブチギレ","atk":50,"def":"","rarity":"rare","text":"ターンに一回、行動回数を１消費し味方の駒と位置を入れ替えても良い。<br>そうしたならその駒を破壊する","moveCells":[[0,-1],[0,1],[0,2],[0,-2],[1,-1],[1,0],[1,1],[-1,0],[2,0]],"slideDirs":[],"jump":false,"sa":false,"rangeCells":[],"textScale":100,"nameScale":100,"image":"","overlay":"","overlayMode":"card","evolveTo":"","evolveDepth":3,"evolveOnly":false}];
+let TUT = {on:false, step:0, startPos:null, dummy:false, timer:null};
+const $t = id => document.getElementById(id);
+const tqa = s => [].slice.call(document.querySelectorAll(s));
+const tByName = n => TUT_CARDS.find(c => c.name === n);
+const tPieces = () => Object.keys(G.pieces).map(k => G.pieces[k]);
+const tPiece = (owner, name) => tPieces().find(p => p.owner === owner && p.name === name) || null;
+const tHandEl = name => tqa('#hand0 .hc[data-inst]').find(el => (el.getAttribute('aria-label') || '').indexOf(name) === 0) || null;
+const tCellEl = p => p ? document.querySelector('.cell[data-i="' + p.pos + '"]') : null;
+const tSelHand = () => { const s = ui.sel; if (!s || s.type !== 'hand') return null; const c = G.players[s.pl].hand.find(x => x.inst === s.inst); return c ? c.name : null; };
+const tSelPiece = () => { const s = ui.sel; if (!s || s.type !== 'piece') return null; const p = G.pieces[s.id]; return p ? p.name : null; };
+const tUsedSoap = () => G.players[0].grave.some(c => c.name === 'あの石鹸は生命線だから');
+const tEndBtn = () => tqa('[data-a="end"]');
+
+const TUT_STEPS = [
+  {t:'ようこそ', x:'「デュエマⅢ」は、盤面でコマを動かして戦うカードゲームです。目的は、相手のリーダー（上側の「王」）のマスに、自分のコマを入れること。これから実際に操作しながら、遊び方を覚えましょう（5分ほど）。', info:true, hl:() => [$t('board')]},
+  {t:'画面の見かた', x:'下があなた（プレイヤー1）の手札、まん中が7×7の盤面、上が相手側です。いちばん下には、操作ボタンが並びます。', info:true, hl:() => [$t('hand0'), $t('board')]},
+  {t:'① カードを選ぶ', x:'手札の「ミーシャ」をクリックして選びます（カード左上の数字が、使うマナ＝コストです）。', hl:() => [tHandEl('ミーシャ')], done:() => tSelHand() === 'ミーシャ' || !!tPiece(0, 'ミーシャ')},
+  {t:'② 召喚する', x:'盤面で緑に光っているマスをクリックすると、ミーシャが出ます。最初は、自分側の手前3列にしか出せません（これをオフサイドといいます）。出すと、マナ（青い宝石の数字）がコストの分だけへります。', hl:() => tqa('.cell.zn'), done:() => !!tPiece(0, 'ミーシャ')},
+  {t:'③ ターンを終える', x:'出したコマは、そのターンは動けません。画面下の「ターン終了」を押して、相手に番をわたしましょう。（相手の番は、チュートリアルでは自動で進みます）', hl:tEndBtn, done:() => G.turn >= 3 && G.current === 0},
+  {t:'④ 相手の番が終わりました', x:'相手が「ロベルト・アーティ」を出しました（ミーシャの2マス前です）。あなたのマナは2になっています。マナの上限は、毎ターン1ずつ増えていきます。', info:true, hl:() => [tCellEl(tPiece(1, 'ロベルト・アーティ')), $t('pbar0')]},
+  {t:'⑤ コマを選ぶ', x:'盤面の「ミーシャ」をクリックして選びます。動けるマスは青、攻撃できるマスは赤で光ります。', hl:() => [tCellEl(tPiece(0, 'ミーシャ'))], done:() => tSelPiece() === 'ミーシャ' || (!!tPiece(0, 'ミーシャ') && TUT.startPos != null && tPiece(0, 'ミーシャ').pos !== TUT.startPos)},
+  {t:'⑥ コマを動かす', x:'青いマスをクリックして、前へ進めましょう。1ターンに動かせるコマは、1体だけです。', hl:() => tqa('.cell.mv'), done:() => !!tPiece(0, 'ミーシャ') && TUT.startPos != null && tPiece(0, 'ミーシャ').pos !== TUT.startPos},
+  {t:'⑦ 魔法カードを選ぶ', x:'つぎは魔法カード。手札の「あの石鹸は生命線だから」（コスト2）を選びます。魔法は盤面には出ず、使うと墓地へ行きます。', hl:() => [tHandEl('あの石鹸は生命線だから')], done:() => tSelHand() === 'あの石鹸は生命線だから' || tUsedSoap()},
+  {t:'⑧ 使用する', x:'画面下のボタン「使用する」を押します。', hl:() => tqa('[data-a="use"]'), done:() => tUsedSoap()},
+  {t:'⑨ 効果は手動で処理します', x:'カードの効果は、自動では処理されません。書いてあるテキストを読んで、みんなで手動で処理します。このカードは「自分のマナ＋１」なので、自分のマナ表示の「現在」の＋ボタンを押しましょう。', hl:() => tqa('#pbar0 [data-a="mana+"]'), done:() => tUsedSoap() && G.players[0].mana >= 1},
+  {t:'⑩ ターンを終える', x:'「ターン終了」を押します。次は、いよいよ攻撃です。', hl:tEndBtn, done:() => G.turn >= 5 && G.current === 0},
+  {t:'⑪ 攻撃するコマを選ぶ', x:'もう一度「ミーシャ」を選びます。相手のコマのマスが、赤く光ります（赤＝攻撃できる）。', hl:() => [tCellEl(tPiece(0, 'ミーシャ'))], done:() => tSelPiece() === 'ミーシャ' || !!G.battle || !tPiece(1, 'ロベルト・アーティ')},
+  {t:'⑫ 攻撃する', x:'赤く光っているマスをクリックして、攻撃します。', hl:() => tqa('.cell.at'), done:() => !!G.battle || !tPiece(1, 'ロベルト・アーティ')},
+  {t:'⑬ 戦闘の結果を選ぶ', x:'ミーシャのATK（攻撃力）10 対 ロベルトのDEF（防御力）5。ATKのほうが上なので、攻撃側の勝ちです。「←数値どおり」の印が付いたボタンを押しましょう。（この選びかたは、開始画面の設定で、自動にもできます）', hl:() => tqa('#popbox .btn.rec'), done:() => !tPiece(1, 'ロベルト・アーティ')},
+  {t:'おしまい！ゴールは相手のリーダー', x:'基本はこれでおしまいです。勝つ方法は2つ。①相手のリーダーのマスに、自分のコマを入れる。②相手が、自分の番のはじめに山札を引けなくなる。ほかにも、設置カード・進化・自由配置モードなどがあります。くわしくは、右上の「📖 ルール」を見てください。', info:true, final:true, hl:() => [tCellEl(tPieces().find(p => p.owner === 1 && p.kind === 'leader') || null)]}
+];
+
+function tutClearHl(){ tqa('.tut-hl').forEach(el => el.classList.remove('tut-hl')); }
+function tutRender(){
+  const box = $t('tutCoach'); if (!box) return;
+  document.body.classList.toggle('tut-on', !!TUT.on);
+  tutClearHl();
+  if (!TUT.on) { box.hidden = true; return; }
+  box.hidden = false;
+  const S = TUT_STEPS[Math.min(TUT.step, TUT_STEPS.length - 1)];
+  const p2 = !!G && G.phase === 'play' && G.current === 1 && G.winner == null;
+  $t('tutCount').textContent = p2 ? '相手の番' : 'ステップ ' + (TUT.step + 1) + ' / ' + TUT_STEPS.length;
+  $t('tutBar').style.width = Math.round((TUT.step + 1) / TUT_STEPS.length * 100) + '%';
+  $t('tutTitle').textContent = p2 ? '相手の番です' : S.t;
+  $t('tutText').textContent = p2 ? '相手の番は、チュートリアルでは自動で進みます。少しお待ちください…' : S.x;
+  $t('tutNext').hidden = p2 || !S.info || !!S.final;
+  $t('tutSkipStep').hidden = p2 || !!S.info;
+  $t('tutKeep').hidden = p2 || !S.final;
+  $t('tutEnd').hidden = p2 || !S.final;
+  document.body.style.setProperty('--tutH', box.offsetHeight + 'px');
+  if (!p2) {
+    try {
+      const els = S.hl().filter(Boolean);
+      els.forEach(el => el.classList.add('tut-hl'));
+      const f = els[0];
+      if (f && f.getBoundingClientRect) { const r = f.getBoundingClientRect(); if (r.bottom > window.innerHeight || r.top < 0) f.scrollIntoView({block:'nearest', inline:'nearest'}); }
+    } catch (e) {}
+  }
+}
+function tutDummy(){
+  if (TUT.dummy || !G || G.turn < 3 || G.current !== 0 || G.phase !== 'play') return false;
+  TUT.dummy = true;
+  const card = G.players[1].hand.find(c => c.name === 'ロベルト・アーティ');
+  if (!card) return false;
+  const m = tPiece(0, 'ミーシャ');
+  let r = 2, c = 3;
+  if (m) { const q = Rules.rc(m.pos); r = Math.max(1, q[0] - 2); c = q[1]; }
+  let i = Rules.idx(r, c);
+  if (G.cells[i]) { for (let k = 0; k < 49; k++) { const q = Rules.rc(k); if (q[0] >= 1 && q[0] <= 3 && !G.cells[k]) { i = k; break; } } }
+  Rules.summon(G, 1, card.inst, i, {force:true});
+  return true;
+}
+function tutAuto(){
+  if (TUT.timer || !G || G.phase !== 'play' || G.winner != null || G.current !== 1 || G.battle) return;
+  TUT.timer = setTimeout(() => {
+    TUT.timer = null;
+    if (!TUT.on || !G || G.current !== 1 || G.winner != null) return;
+    report(doAction({t:'end', pl:1})); ui.sel = null; renderGame();
+  }, 1300);
+}
+function tutCheck(){
+  if (!TUT.on) return;
+  if (!G) { tutEnd(); return; }
+  const m = tPiece(0, 'ミーシャ'); if (m && TUT.startPos == null) TUT.startPos = m.pos;
+  if (tutDummy()) { renderGame(); return; }
+  tutAuto();
+  let g = 0;
+  while (TUT.step < TUT_STEPS.length - 1 && !TUT_STEPS[TUT.step].info && TUT_STEPS[TUT.step].done && TUT_STEPS[TUT.step].done() && g++ < 20) TUT.step++;
+  tutRender();
+}
+function tutEnd(){
+  TUT.on = false; if (TUT.timer) { clearTimeout(TUT.timer); TUT.timer = null; }
+  tutRender(); const b = $t('tutToggle'); if (b) b.hidden = false;
+}
+function tutBuild(){
+  const lib = n => cards.find(c => c.name === n) || null;
+  const defs = {};
+  const mk = (name, pfx) => {
+    const c = Object.assign({}, tByName(name)), l = lib(name);
+    if (l && l.image) { c.image = l.image; if (l.overlay) { c.overlay = l.overlay; c.overlayMode = l.overlayMode; } }
+    defs[pfx + c.id] = c;
+    return Object.assign({}, c, {inst:uid(), defId:pfx + c.id});
+  };
+  const list = (names, pfx) => names.map(n => mk(n, pfx));
+  const st = Rules.newGame([{deck:[], leader:mk('エリザベート', '0:'), sleeve:null}, {deck:[], leader:mk('フリード・ハルドリア', '1:'), sleeve:null}], {manualBattle:true});
+  st.players[0].hand = list(['ミーシャ', 'あの石鹸は生命線だから', 'ルノア・カールトン', 'ティーダ', 'ハルドリア王国 王宮'], '0:');
+  st.players[0].deck = list(['エルザ・アーチフィールド', 'ミレイ', 'グッバイララバイ', 'シルビア', 'ミーシャ', 'ルノア・カールトン', 'ティーダ', 'ミレイ', 'エルザ・アーチフィールド', 'シルビア'], '0:');
+  st.players[1].hand = list(['ロベルト・アーティ', '巴マミ', '美樹さやか', '佐倉杏子', '巴マミ'], '1:');
+  st.players[1].deck = list(['美樹さやか', '佐倉杏子', '巴マミ', '美樹さやか', '佐倉杏子', 'ロベルト・アーティ', '巴マミ', '美樹さやか'], '1:');
+  Rules.chooseFirst(st, 0);
+  net.defs = defs;
+  return st;
+}
+function tutStart(){
+  if (net.role !== 'local') { alert('オンライン対戦の接続中は、チュートリアルを始められません。対戦を終えてから、お試しください。'); return; }
+  if (G && G.winner == null && !confirm('進行中の対戦をやめて、チュートリアルを始めますか？')) return;
+  oClose();
+  const rb = $t('rbModal'); if (rb && !rb.hidden) rb.hidden = true;
+  TUT = {on:true, step:0, startPos:null, dummy:false, timer:null};
+  G = tutBuild();
+  showTab('pPlay'); showGame();
+  $t('tutToggle').hidden = true;
+  renderGame();
+}
+document.addEventListener('click', ev => {
+  const b = ev.target.closest ? ev.target.closest('#tutToggle,#tutNext,#tutSkipStep,#tutKeep,#tutEnd,#tutQuit') : null;
+  if (!b) return;
+  switch (b.id) {
+    case 'tutToggle': tutStart(); break;
+    case 'tutNext': TUT.step++; tutCheck(); break;
+    case 'tutSkipStep': TUT.step = Math.min(TUT.step + 1, TUT_STEPS.length - 1); tutCheck(); break;
+    case 'tutKeep': tutEnd(); break;
+    case 'tutEnd': tutEnd(); leaveGame(); break;
+    case 'tutQuit': twice(b, () => { tutEnd(); leaveGame(); }, 'もう一度で終了'); break;
+  }
+});
+
+
 /* ---------- 起動 ---------- */
 (async function(){
   await DB.init();
   $("persistNote").hidden = DB.persistent;
   syncType(); renderMoveEdit(); render(); syncBold();
+  const hadData = lsGet(LS_HAD) === "1";
   await refresh();
   await refreshDecks();
+  if (hadData && !cards.length && !decks.length) $("lostNote").hidden = false;
+  updateBackupInfo(); askPersist();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 })();
 })();
@@ -3369,6 +3587,8 @@ $("text").addEventListener("paste", e => {
     <li><b>対戦：</b>1人が「部屋を作る」で4桁の番号を作り、相手に伝えます。相手は番号を入れて「入る」を押します。2人ともデッキを選んで「準備完了」を押すと始まります。ひとりで試すときは、1つの画面で2人分を操作できます。</li>
     <li><b>カードの同期：</b>カード工房の「同期」で、友達と作ったカードやデッキを送り合えます。</li>
     <li><b>盤面の見た目：</b>対戦中に、7種類から選べます。</li>
+    <li><b>チュートリアル：</b>右上の「🎓 チュートリアル」を押すと、実際にカードを出し、動かし、攻撃しながら、遊び方を覚えられます（5分ほど）。相手の番は自動で進みます。途中でやめたいときは、「やめる」を2回押します。</li>
+    <li><b>バックアップ（カードの保存）：</b>カード工房の「バックアップ」→「ファイルに保存」で、全カードとデッキを1つのファイルに保存できます。「ファイルから読み込み」で、いつでも元に戻せます。ブラウザの保存データは、しばらく使わないと消されることがあるため、ときどきファイルに保存しておくと安心です。</li>
     <li><b>効果音とターン交代：</b>召喚・移動・攻撃・破壊・進化・勝敗などで音が鳴ります。右上の「効果音」で消せます。ターンが変わると、画面に0.5秒ほど「プレイヤー1のターン」のような帯が出ます。</li>
   </ol>
   <p>カーソルをカードやコマに合わせると、画像とは別に、説明文と動けるマスの図が出ます。</p>
@@ -3399,6 +3619,8 @@ $("text").addEventListener("paste", e => {
     <dd>選べません。「進化先専用カード」として作ったクリーチャーだけを選べます。</dd>
     <dt>リーダーが相打ちで壊れたら？</dt>
     <dd>そのリーダーの持ち主の負けです。</dd>
+    <dt>作ったカードが消えてしまいました。</dt>
+    <dd>ブラウザが、しばらく使っていない保存データを消すことがあります。カード工房の「バックアップ」でファイルに保存しておけば、「ファイルから読み込み」で元に戻せます。ときどき保存しておきましょう。iPhone・iPadのSafariは、「ホーム画面に追加」して開くと消えにくくなります。また、サイトの置き場所（アドレス）が変わると、前の保存データは引き継がれないので、ファイルで移してください。</dd>
   </dl>
   <div class="house"><span class="t">この本について</span>
     <p>金色の線の囲みは、<b>このゲームでの取り決め</b>です。元のルールに書かれていなかった細かい点を、いまのアプリの動きに合わせて決めています。話し合って変えたいときは、そこを見直しましょう。</p></div>
@@ -3434,5 +3656,19 @@ $("text").addEventListener("paste", e => {
 })();
 </script>
 
+
+<button type="button" id="tutToggle" class="rbfab tutfab" title="遊び方を、実際に操作しながら覚えます">🎓 チュートリアル</button>
+<div class="tutcoach" id="tutCoach" hidden role="region" aria-label="チュートリアル" aria-live="polite">
+  <div class="tutrow"><span id="tutCount"></span><button type="button" id="tutQuit" class="tutq">やめる</button></div>
+  <div class="tutbar"><i id="tutBar"></i></div>
+  <h3 id="tutTitle"></h3>
+  <p id="tutText"></p>
+  <div class="tutbtns">
+    <button type="button" id="tutSkipStep">このステップをとばす</button>
+    <button type="button" id="tutNext" class="pri">次へ</button>
+    <button type="button" id="tutKeep">このまま練習を続ける</button>
+    <button type="button" id="tutEnd" class="pri">チュートリアルを終える</button>
+  </div>
+</div>
 </body>
 </html>
